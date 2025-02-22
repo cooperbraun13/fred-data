@@ -15,13 +15,14 @@ gdp_growth = fred.get_series("A191RL1Q225SBEA")
 inflation = fred.get_series("CPIAUCSL").pct_change() * 100
 unemployment = fred.get_series("UNRATE")
 
-# convert to datetime format
+# 3 columns with gdp growth, inflation rate, and unemployment rate
 df = pd.DataFrame({
     "GDP Growth (%)": gdp_growth,
     "Inflation Rate (%)": inflation,
     "Unemployment Rate (%)": unemployment
 })
 
+# convert to datetime format
 # any rows with missing values are removed
 df.index = pd.to_datetime(df.index)
 df.dropna(inplace=True)
@@ -31,11 +32,13 @@ data_dir = "data"
 os.makedirs(data_dir, exist_ok=True)
 data_path = os.path.join(data_dir, "economic_data.csv")
 
+# writes teh df to a csv file
 df.to_csv(data_path)
 print(f"Data saved to {data_path}")
 
 print(df.head())
 
+# plots the data
 df.plot(figsize=(10, 5), title="Economic Indicators Over Time")
 plt.xlabel("Year")
 plt.ylabel("Percentage (%)")
