@@ -21,3 +21,31 @@ try:
 except Exception as e:
     st.error("Data not available, please wait for the data fetching job to complete")
     df = pd.DataFrame()
+    
+if not df.empty:
+    st.write("### Data Preview")
+    st.dataframe(df.head())
+    
+    st.sidebar.header("Dashboard Settings")
+    available_indicators = df.columns.tolist()
+    selected_indicators = st.sidebar.multiselect(
+        "Select Economic Indicators", available_indicators, default=available_indicators
+    )
+    
+    min_date, max_date = df.index.min(), df.index.max()
+    date_range = st.sidebar.date_input("Select Date Range", [min_date, max_date])
+    
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+        filtered_df = df.loc[(df.index >= pd.to_datetime(start_date)) & (df.index <= pd.to_datetime(end_date))]
+    else:
+        filtered_df = df.copy()
+        
+    if st.sidebar.checkbox("Show Correlation Matrix"):
+        st.write("### Correlation Matrix")
+        st.write(filtered_df[selected_indicators].corr())
+        
+    st.write("### Economic Indicators Over Time")
+    st.line_chart(filtered_df[selected_indicators])
+else:
+    st.warning("No data available to display at this moment")
